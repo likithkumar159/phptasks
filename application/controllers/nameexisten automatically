@@ -1,0 +1,54 @@
+// Your_controller.php
+public function check_name_existence() {
+    $this->load->model('Your_model');
+
+    $name = $this->input->post('name');
+
+    $name_exists = $this->Your_model->check_name_existence($name);
+
+    echo json_encode(array('exists' => $name_exists));
+}
+
+
+
+// Your_model.php
+public function check_name_existence($name) {
+    $this->db->where('name', $name);
+    $query = $this->db->get('your_table');
+
+    return $query->num_rows() > 0;
+}
+
+
+<!-- Include jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<!-- Your form in the view file -->
+<form id="nameForm" method="post" action="#">
+    <label for="name">Name:</label>
+    <input type="text" name="name" id="name" required>
+    <span id="nameMessage"></span>
+</form>
+
+<!-- Ajax script -->
+<script>
+    $(document).ready(function () {
+        $('#name').on('input', function () {
+            var name = $(this).val();
+
+            $.ajax({
+                type: 'POST',
+                url: 'your_controller/check_name_existence',
+                data: { name: name },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.exists) {
+                        $('#nameMessage').text('Name already exists!');
+                    } else {
+                        $('#nameMessage').text('Name is available!');
+                    }
+                }
+            });
+        });
+    });
+</script>
